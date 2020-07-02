@@ -102,6 +102,18 @@ var UIController = (function(){
         },
         getDOMstrings: function(){
             return DOMstrings
+        },
+        clearFields:function(){
+            var fields,fieldsArray;
+            //returns a list instead of array
+            fields = document.querySelectorAll(DOMstrings.description+', '+DOMstrings.value)
+            //convert to array using .slice
+            fieldsArray = Array.prototype.slice.call(fields)
+            //loop over array
+            fieldsArray.forEach(function(curr,index,arr){
+                curr.value = ""
+            })
+            
         }
     } 
 
@@ -133,6 +145,7 @@ var appController = (function(budgetCtrl,UICtrl){
         newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
         //add item to UI
         UICtrl.addListItem(newItem,input.type)
+        UICtrl.clearFields()
         //calculate budget
 
         //Display budget on the UI
