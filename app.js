@@ -1,7 +1,30 @@
-var budgetController = (function(){
-       
-})() 
 
+var budgetController = (function(){
+    var Expense = function(id,description,value){
+            this.id = id;
+            this.description = description;
+            this.value = value;
+    };
+
+    var Income = function(id,description,value){
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+    
+    //storing all expenses
+
+    var allData = {
+       allItems:{
+        expenses : [],
+        incomes : [], 
+       },
+       totals:{
+         expenses : 0,
+         incomes: 0
+       }
+    }
+})() 
 
 
 var UIController = (function(){
@@ -36,19 +59,30 @@ to prevent changing the name of the varibale in the function
 and only make those changes on the otuside.  */
 var appController = (function(budgerCtrl,UICtrl){
     //some code
-    var DOM = UICtrl.getDOMstrings()
+    var setupEventListeners = function(){
+        var DOM = UICtrl.getDOMstrings()
+        document.querySelector(DOM.inputBtn).addEventListener('click',ctrlAddItem);
+        //adding global eventlistener not for a specific item
+        document.addEventListener('keypress',function(event){
+            if(event.keyCode === 13){
+                //when enter is hit
+                ctrlAddItem()
+            }
+        })
+    }
     var ctrlAddItem =  function(){
         var input = UICtrl.getInputData()
-        console.log(input)
+        //console.log(input)
 
     }
-    document.querySelector(DOM.inputBtn).addEventListener('click',ctrlAddItem);
-    //adding global eventlistener not for a specific item
-    document.addEventListener('keypress',function(event){
-        if(event.keyCode === 13){
-            //when enter is hit
-            ctrlAddItem()
+    return(
+        {
+            init:function(){
+                setupEventListeners();
+            }
         }
-    })
+    )
    
 })(budgetController,UIController);
+
+appController.init()
