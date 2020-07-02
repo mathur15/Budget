@@ -177,7 +177,14 @@ var appController = (function(budgetCtrl,UICtrl){
     //some code
     var setupEventListeners = function(){
         var DOM = UICtrl.getDOMstrings()
+        
         document.querySelector(DOM.inputBtn).addEventListener('click',ctrlAddItem);
+        UICtrl.displayBudget({
+            budget:0,
+            totalInc:0,
+            totalExp:0,
+            percent:0
+        })
         //adding global eventlistener not for a specific item
         document.addEventListener('keypress',function(event){
             if(event.keyCode === 13){
