@@ -30,6 +30,7 @@ var budgetController = (function(){
         allData.allItems[type].forEach(function(curr){
             sum+=curr.value
         })
+        console.log(sum)
         allData.totals[type] = sum
     }
     return{
@@ -63,9 +64,9 @@ var budgetController = (function(){
             calculateTotal('exp')
 
             //the budget left
-            allData.budget = allData.total['inc'] - allData.total['exp']
+            allData.budget = allData.totals['inc'] - allData.totals['exp']
             //calculate percentage
-            allData.percentage = Math.round((allData.total['exp']/allData.total['inc'])*100)
+            allData.percentage = Math.round((allData.totals['exp']/allData.totals['inc'])*100)
         },
         getBudget:function(){
             return {
@@ -176,9 +177,13 @@ var appController = (function(budgetCtrl,UICtrl){
         var input,newItem;
         //get input field data
         input = UICtrl.getInputData()
+        console.log(input)
         //check input
-        if(input.description !== "" && !isNaN(input.value) && input.value > 0){
-            //console.log(input)
+        console.log(input.description !== "")
+        console.log(!isNaN(input.num_value))
+        console.log(input.num_value > 0)
+        if(input.description !== "" && !isNaN(input.num_value) && input.num_value > 0){
+            console.log(input)
             //add item to data structure in budgetController data structure
             newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
             //add item to UI
