@@ -59,7 +59,9 @@ var UIController = (function(){
         inputType: '.add__type',
         description: '.add__description',
         value: '.add__value',
-        inputBtn: '.add__btn'
+        inputBtn: '.add__btn',
+        incomeContainer:'.income__list',
+        expenseContainer:'.expense__list'
     }
     return{
         getInputData:function(){
@@ -71,6 +73,33 @@ var UIController = (function(){
                 num_value: document.querySelector(DOMstrings.value).value
             }
             return data
+        },
+        addListItem:function(obj,type){
+            var html,newHTML,elemet;
+            // Create html string with placeholder text
+            if(type === 'inc'){
+                element = DOMstrings.incomeContainer
+                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div>'+
+            '<div class="right clearfix"><div class="item__value">+%num_value%</div><button class="item__delete--btn">'+
+            '<i class="ion-ios-close-outline"></i></button></div></div></div>'
+            }else if(type === 'exp'){
+                element = DOMstrings.expenseContainer
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div>'+
+            '<div class="right clearfix"><div class="item__value">-%num_value%</div><div class="item__percentage">21%</div>'+
+            '<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>'+
+            '</div></div></div>'
+            }
+            console.log(element)
+            console.log(html)
+            //replace the placeholder text with data
+            newHTML = html.replace('%id%',obj.id)
+            newHTML = newHTML.replace("%description%",obj.description)
+            newHTML = newHTML.replace("%num_value%",obj.value)
+            console.log(newHTML)
+            //Insert the html into the DOM
+            //see documentation for insertAdjacentHTML
+            document.querySelector(element).insertAdjacentHTML('beforeend',newHTML)
+
         },
         getDOMstrings: function(){
             return DOMstrings
@@ -103,11 +132,16 @@ var appController = (function(budgetCtrl,UICtrl){
         //console.log(input)
         //add item to data structure in budgetController data structure
         newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
+        //add item to UI
+        UICtrl.addListItem(newItem,input.type)
+        //calculate budget
 
+        //Display budget on the UI
     }
     return(
         {
             init:function(){
+                console.log("Application begun")
                 setupEventListeners();
             }
         }
