@@ -21,7 +21,16 @@ var budgetController = (function(){
        totals:{
          exp : 0,
          inc : 0
-       }
+       },
+       budget:0,
+       percentage:-1
+    }
+    var calculateTotal = function(type){
+        var sum = 0;
+        allData.allItems[type].forEach(function(curr){
+            sum+=curr.value
+        })
+        allData.totals[type] = sum
     }
     return{
         addItem: function(type,des,val){
@@ -47,6 +56,24 @@ var budgetController = (function(){
         },
         testing:function(){
             console.log(allData)
+        },
+        calculateBudget:function(){
+            //calculate total income and expenses
+            calculateTotal('inc')
+            calculateTotal('exp')
+
+            //the budget left
+            allData.budget = allData.total['inc'] - allData.total['exp']
+            //calculate percentage
+            allData.percentage = Math.round((allData.total['exp']/allData.total['inc'])*100)
+        },
+        getBudget:function(){
+            return {
+                budget:allData.budget,
+                percent:allData.percentage,
+                totalInc:allData.totals['inc'],
+                totalExp:allData.totals['exp']
+            }
         }
     }
 })() 
@@ -69,7 +96,7 @@ var UIController = (function(){
             var data = {
                 type: document.querySelector(DOMstrings.inputType).value,
                 description:document.querySelector(DOMstrings.description).value,
-                num_value: document.querySelector(DOMstrings.value).value
+                num_value:parseFloat(document.querySelector(DOMstrings.value).value)
             }
             return data
         },
@@ -113,12 +140,13 @@ var UIController = (function(){
             fieldsArray.forEach(function(curr,index,arr){
                 curr.value = ""
             })
+            //set the focus on the description field
+            fieldsArray[0].focus();
             
         }
     } 
 
 })()
-
 
 /*The reason the arguments are different from the original
 to prevent changing the name of the varibale in the function
@@ -136,19 +164,30 @@ var appController = (function(budgetCtrl,UICtrl){
             }
         })
     }
+    var UpdateBudget = function(){
+        //calculate Budget
+        budgetCtrl.calculateBudget()
+        //return the budget
+        var budget = budgetCtrl.getBudget()
+        //display Budget on the UI
+        console.log(budget)
+    }
     var ctrlAddItem =  function(){
         var input,newItem;
         //get input field data
         input = UICtrl.getInputData()
-        //console.log(input)
-        //add item to data structure in budgetController data structure
-        newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
-        //add item to UI
-        UICtrl.addListItem(newItem,input.type)
-        UICtrl.clearFields()
-        //calculate budget
+        //check input
+        if(input.description !== "" && !isNaN(input.value) && input.value > 0){
+            //console.log(input)
+            //add item to data structure in budgetController data structure
+            newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
+            //add item to UI
+            UICtrl.addListItem(newItem,input.type)
+            UICtrl.clearFields()
 
-        //Display budget on the UI
+            //calculate and update budget
+            UpdateBudget()
+        }
     }
     return(
         {
