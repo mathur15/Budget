@@ -1,9 +1,9 @@
 
 var budgetController = (function(){
     var Expense = function(id,description,value){
-            this.id = id;
-            this.description = description;
-            this.value = value;
+        this.id = id;
+        this.description = description;
+        this.value = value;
     };
 
     var Income = function(id,description,value){
@@ -16,13 +16,39 @@ var budgetController = (function(){
 
     var allData = {
        allItems:{
-        expenses : [],
-        incomes : [], 
+        exp : [],
+        inc: [], 
        },
        totals:{
-         expenses : 0,
-         incomes: 0
+         exp : 0,
+         inc : 0
        }
+    }
+    return{
+        addItem: function(type,des,val){
+            var newItem;
+            //for the first item
+            if(allData.allItems[type].length ===0){
+                id = 0
+            }
+            else{
+                //retrieve last id and add one to it
+                id = allData.allItems[type][allData.allItems[type].length-1].id + 1
+            }
+            //'exp'  and 'inc' are part of the data input
+            if(type ==='exp'){
+                newItem = new Expense(id,des,val)
+            }
+            else{
+                newItem = new Income(id,des,val)
+            }
+
+            allData.allItems[type].push(newItem)
+            return newItem
+        },
+        testing:function(){
+            console.log(allData)
+        }
     }
 })() 
 
@@ -57,7 +83,7 @@ var UIController = (function(){
 /*The reason the arguments are different from the original
 to prevent changing the name of the varibale in the function
 and only make those changes on the otuside.  */
-var appController = (function(budgerCtrl,UICtrl){
+var appController = (function(budgetCtrl,UICtrl){
     //some code
     var setupEventListeners = function(){
         var DOM = UICtrl.getDOMstrings()
@@ -71,8 +97,12 @@ var appController = (function(budgerCtrl,UICtrl){
         })
     }
     var ctrlAddItem =  function(){
-        var input = UICtrl.getInputData()
+        var input,newItem;
+        //get input field data
+        input = UICtrl.getInputData()
         //console.log(input)
+        //add item to data structure in budgetController data structure
+        newItem = budgetCtrl.addItem(input.type,input.description,input.num_value)
 
     }
     return(
