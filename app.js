@@ -151,6 +151,11 @@ var UIController = (function(){
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML)
 
         },
+        deleteListItem: function(selectorId){
+            var element;
+            element =  document.getElementById(selectorId)
+            element.parentNode.removeChild(element)
+        },
         getDOMstrings: function(){
             return DOMstrings
         },
@@ -238,13 +243,15 @@ var appController = (function(budgetCtrl,UICtrl){
         //console.log(event.target.parentNode)
         //each parentNode moves up a level, use according to how many levels to move up
         var itemId,idNum,splitId,type;
-        itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        itemId = event.target.parentNode.parentNode.parentNode.id;
         if(itemId){
             //sample id: inc-1
             splitId = itemId.split('-')
             type = splitId[0]
             idNum = parseInt(splitId[1])
             budgetCtrl.deleteItem(type,idNum)
+            UICtrl.deleteListItem(itemId)
+            UpdateBudget()
         }
         budgetCtrl.testing()
     }
