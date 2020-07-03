@@ -80,6 +80,18 @@ var budgetController = (function(){
                 totalInc:allData.totals['inc'],
                 totalExp:allData.totals['exp']
             }
+        },
+        deleteItem : function(type,id){
+            var ids = allData.allItems[type].map(function(current){
+                return current.id
+            })//returns an array of ids
+            //console.log(ids)
+            index = ids.indexOf(id)//find position of that id
+            if(index !== -1){
+                //remove of allData
+                //starting to point to delete and how many after that
+                allData.allItems[type].splice(index,1)
+            }
         }
     }
 })() 
@@ -97,7 +109,8 @@ var UIController = (function(){
         budgetLabel:'.budget__value',
         totalIncome:'.budget__income--value',
         totalExpenses:'.budget__expenses--value',
-        percentage:'.budget__expenses--percentage'
+        percentage:'.budget__expenses--percentage',
+        container:'.container'
 
     }
     return{
@@ -118,13 +131,13 @@ var UIController = (function(){
             // Create html string with placeholder text
             if(type === 'inc'){
                 element = DOMstrings.incomeContainer
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div>'+
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div>'+
             '<div class="right clearfix"><div class="item__value">+%num_value%</div><button class="item__delete--btn">'+
             '<i class="ion-ios-close-outline"></i></button></div></div></div>'
             }else if(type === 'exp'){
                 //set the container you want to be a part of - 'exp' or 'inc'
                 element = DOMstrings.expenseContainer
-                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div>'+
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div>'+
             '<div class="right clearfix"><div class="item__value">-%num_value%</div><div class="item__percentage">21%</div>'+
             '<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>'+
             '</div></div></div>'
@@ -152,7 +165,7 @@ var UIController = (function(){
                 curr.value = ""
             })
             //set the focus on the description field
-            fieldsArray[0].focus();
+            fieldsArray[0].focus
             
         },
        displayBudget: function(budgetObj){
@@ -192,6 +205,7 @@ var appController = (function(budgetCtrl,UICtrl){
                 ctrlAddItem()
             }
         })
+        document.querySelector(DOM.container).addEventListener('click',ctrlDeleteItem)
     }
     var UpdateBudget = function(){
         //calculate Budget
@@ -217,6 +231,22 @@ var appController = (function(budgetCtrl,UICtrl){
             //calculate and update budget
             UpdateBudget()
         }
+    }
+    var ctrlDeleteItem = function(event){
+        //console.log(event.target)--gives us the HTML where the event was
+        //triggered in the child element within the selected DOM elements
+        //console.log(event.target.parentNode)
+        //each parentNode moves up a level, use according to how many levels to move up
+        var itemId,idNum,splitId,type;
+        itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        if(itemId){
+            //sample id: inc-1
+            splitId = itemId.split('-')
+            type = splitId[0]
+            idNum = parseInt(splitId[1])
+            budgetCtrl.deleteItem(type,idNum)
+        }
+        budgetCtrl.testing()
     }
     return(
         {
