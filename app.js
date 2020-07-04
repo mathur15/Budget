@@ -137,6 +137,20 @@ var UIController = (function(){
         expense_percent_label:'.item__percentage'
 
     }
+    function formatNumber(num,type){
+        var num_components;
+        num = Math.abs(num)
+        //Two decimal points
+        num = num.toFixed(2)
+
+        //split integer part and decimal
+        num_components = num.split('.')
+        //incorporate ',' for 1000s
+        if(num_components[0].length > 3){
+            num_components[0] =  num_components[0].substr(0,num_components[0].length-3) + ',' + num_components[0].substr(num_components[0].length -3,3) 
+        }
+        return (type === 'exp'? '-' : '+')+ num_components[0] +'.'+ num_components[1]
+    }
     return{
         getInputData:function(){
             //type is inc or exp
@@ -156,20 +170,20 @@ var UIController = (function(){
             if(type === 'inc'){
                 element = DOMstrings.incomeContainer
                 html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div>'+
-            '<div class="right clearfix"><div class="item__value">+%num_value%</div><button class="item__delete--btn">'+
+            '<div class="right clearfix"><div class="item__value">%num_value%</div><button class="item__delete--btn">'+
             '<i class="ion-ios-close-outline"></i></button></div></div></div>'
             }else if(type === 'exp'){
                 //set the container you want to be a part of - 'exp' or 'inc'
                 element = DOMstrings.expenseContainer
                 html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div>'+
-            '<div class="right clearfix"><div class="item__value">-%num_value%</div><div class="item__percentage">21%</div>'+
+            '<div class="right clearfix"><div class="item__value">%num_value%</div><div class="item__percentage">21%</div>'+
             '<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>'+
             '</div></div></div>'
             }
             //replace the placeholder text with data
             newHTML = html.replace('%id%',obj.id)
             newHTML = newHTML.replace("%description%",obj.description)
-            newHTML = newHTML.replace("%num_value%",obj.value)
+            newHTML = newHTML.replace("%num_value%",formatNumber(obj.value,type))
             //Insert the html into the DOM
             //see documentation for insertAdjacentHTML
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML)
@@ -198,9 +212,10 @@ var UIController = (function(){
             
         },
        displayBudget: function(budgetObj){
-            document.querySelector(DOMstrings.budgetLabel).textContent = budgetObj.budget
-            document.querySelector(DOMstrings.totalIncome).textContent = budgetObj.totalInc
-            document.querySelector(DOMstrings.totalExpenses).textContent = budgetObj.totalExp
+            budgetObj.budget > 0?type= 'inc':type = 'exp'
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(budgetObj.budget,type)
+            document.querySelector(DOMstrings.totalIncome).textContent = formatNumber(budgetObj.totalInc,'inc')
+            document.querySelector(DOMstrings.totalExpenses).textContent = formatNumber(budgetObj.totalExp,'exp')
 
             if(budgetObj.percent > 0){
                 document.querySelector(DOMstrings.percentage).textContent = budgetObj.percent
