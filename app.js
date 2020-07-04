@@ -152,6 +152,11 @@ var UIController = (function(){
         }
         return (type === 'exp'? '-' : '+')+ num_components[0] +'.'+ num_components[1]
     }
+    var nodeListForEach = function(list,callback){
+        for(var i =0;i<list.length;i++){
+            callback(list[i],i)
+        }
+    }
     return{
         getInputData:function(){
             //type is inc or exp
@@ -203,9 +208,7 @@ var UIController = (function(){
             //returns a list instead of array
             fields = document.querySelectorAll(DOMstrings.description+', '+DOMstrings.value)
             //convert to array using .slice
-            fieldsArray = Array.prototype.slice.call(fields)
-            //loop over array
-            fieldsArray.forEach(function(curr,index,arr){
+            nodeListForEach(fields,function(curr){
                 curr.value = ""
             })
             //set the focus on the description field
@@ -233,15 +236,19 @@ var UIController = (function(){
 
             document.querySelector(DOMstrings.month).innerHTML = months[month] + ' ' + year
         },
+        changedType: function(){
+            //return node list
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' + DOMstrings.description + ',' + DOMstrings.value
+            )
+            nodeListForEach(fields,function(curr){
+                curr.classList.toggle('red-focus')
+            })
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red')
+        },
         displayPercentages:function(allpercentages){
             var fields = document.querySelectorAll(DOMstrings.expense_percent_label)
             //querySelectorAll return a NodeList so it does not include a forEach method like for arrays
-            var nodeListForEach = function(list,callback){
-                for(var i =0;i<list.length;i++){
-                    callback(list[i],i)
-                }
-            }
-
             nodeListForEach(fields,function(curr,index){
                 if(allpercentages[index] > 0){
                     curr.textContent = allpercentages[index] + '%'
@@ -279,6 +286,7 @@ var appController = (function(budgetCtrl,UICtrl){
             }
         })
         document.querySelector(DOM.container).addEventListener('click',ctrlDeleteItem)
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType)
     }
     var UpdateBudget = function(){
         //calculate Budget
