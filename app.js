@@ -134,7 +134,8 @@ var UIController = (function(){
         totalExpenses:'.budget__expenses--value',
         percentage:'.budget__expenses--percentage',
         container:'.container',
-        expense_percent_label:'.item__percentage'
+        expense_percent_label:'.item__percentage',
+        month: '.budget__title--month'
 
     }
     function formatNumber(num,type){
@@ -223,13 +224,24 @@ var UIController = (function(){
                 document.querySelector(DOMstrings.percentage).textContent = '-----'
             }
         },
+        displayMonth : function(){
+            var now = new Date()
+            months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+            var year = now.getFullYear()
+            var month = now.getMonth()
+            console.log(year+' ' + months[month])
+
+            document.querySelector(DOMstrings.month).innerHTML = months[month] + ' ' + year
+        },
         displayPercentages:function(allpercentages){
             var fields = document.querySelectorAll(DOMstrings.expense_percent_label)
+            //querySelectorAll return a NodeList so it does not include a forEach method like for arrays
             var nodeListForEach = function(list,callback){
                 for(var i =0;i<list.length;i++){
                     callback(list[i],i)
                 }
             }
+
             nodeListForEach(fields,function(curr,index){
                 if(allpercentages[index] > 0){
                     curr.textContent = allpercentages[index] + '%'
@@ -320,12 +332,13 @@ var appController = (function(budgetCtrl,UICtrl){
             UICtrl.deleteListItem(itemId)
             UpdateBudget()
         }
-        budgetCtrl.testing()
+        //budgetCtrl.testing()
     }
     return(
         {
             init:function(){
                 console.log("Application begun")
+                UICtrl.displayMonth()
                 setupEventListeners();
             }
         }
